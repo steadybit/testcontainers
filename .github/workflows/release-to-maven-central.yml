@@ -1,0 +1,48 @@
+name: release to maven central
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseversion:
+        description: 'Release version'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '8'
+          cache: 'maven'
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.MAVEN_GPG_PRIVATE_KEY_PASSWORD }}
+          server-id: 'ossrh'
+          server-username: ${{ secrets.MAVEN_SERVER_OSSRH_USERNAME }}
+          server-password: ${{ secrets.MAVEN_SERVER_OSSRH_PASSWORD }}
+
+      - name: Build with Maven
+        run: mvn -B deploy -Prelease -D"revision=${{ github.event.inputs.releaseversion }}"
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v3.0.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.releaseversion }}
+          release_name: ${{ github.event.inputs.releaseversion }}
+          body: |
+            ### Changes
+            ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>testcontainers</artifactId>
+    <groupId>com.steadybit.testcontainers</groupId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <name>Steadybit Testcontainers Module</name>
+    <description>Testcontainers module from Steadybit to integrate Chaos Experiments into your integration tests.</description>
+    <url>https://steadybit.com</url>
+    <inceptionYear>2022</inceptionYear>
+
+    <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <!--dependencies-->
+        <junit-bom.version>5.8.2</junit-bom.version>
+        <testcontainers-bom.version>1.16.3</testcontainers-bom.version>
+        <assertj-core.version>3.22.0</assertj-core.version>
+        <logback-classic.version>1.2.10</logback-classic.version>
+
+        <!--plugins-->
+        <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+        <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
+    </properties>
+
+    <organization>
+        <name>Steadybit GmbH</name>
+        <url>http://steadybit.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/steadybit/testcontainers</url>
+        <connection>scm:git@github.com:steadybit/testcontainers.git</connection>
+        <developerConnection>scm:git:git@github.com:steadybit/testcontainers.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/steadybit/testcontainers/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <id>joshiste</id>
+            <name>Johannes Edmeier</name>
+            <email>johannes.edmeier@steadybit.com</email>
+            <organization>Steadybit GmbH</organization>
+        </developer>
+    </developers>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
+
+        <!--test-->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Tests.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/Abstract*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>oss</flattenMode>
+                    <pomElements>
+                        <distributionManagement>remove</distributionManagement>
+                        <repositories>remove</repositories>
+                    </pomElements>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${maven-source-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven-javadoc-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus-staging-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
