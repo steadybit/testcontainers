@@ -1,7 +1,6 @@
 package com.steadybit.testcontainers.dns;
 
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.net.InetAddressUtils;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -10,8 +9,7 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame;
-import org.testcontainers.containers.startupcheck.StartupCheckStrategy;
-import org.testcontainers.utility.DockerStatus;
+import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +54,10 @@ public class TestcontainersDnsResolver {
     }
 
     private void resolveUsingExtraHosts(List<String> unresolved, List<String> resolved) {
+        if (unresolved.isEmpty()) {
+            return;
+        }
+
         Map<String, List<String>> extraHosts = Arrays.stream(this.dockerClient.inspectContainerCmd(targetContainerId).exec()
                         .getHostConfig()
                         .getExtraHosts())
@@ -72,19 +74,25 @@ public class TestcontainersDnsResolver {
     }
 
     private void resolveUsingContainer(List<String> unresolved, List<String> resolved) {
-        GetentHostsContainer container = new GetentHostsContainer()
+        if (unresolved.isEmpty()) {
+            return;
+        }
+
+        DigContainer container = new DigContainer()
                 .withCommand(unresolved.toArray(new String[0]))
                 .withNetworkMode("container:" + targetContainerId);
         try {
             container.start();
             try (Scanner scanner = new Scanner(container.getLogs(OutputFrame.OutputType.STDOUT))) {
-
                 while (scanner.hasNext()) {
-                    String ip = scanner.next();
                     String hostname = scanner.next();
+                    scanner.next();
+                    scanner.next();
+                    scanner.next();
+                    String ip = scanner.next();
                     scanner.nextLine();
                     resolved.add(ip);
-                    unresolved.remove(hostname);
+                    unresolved.remove(hostname.substring(0, hostname.length() - 1));
                 }
             }
 
@@ -93,22 +101,16 @@ public class TestcontainersDnsResolver {
         }
     }
 
-    private static class GetentHostsContainer extends GenericContainer<GetentHostsContainer> {
-        public GetentHostsContainer() {
-            super("gaiadocker/iproute2:latest");
+    private static class DigContainer extends GenericContainer<DigContainer> {
+        public DigContainer() {
+            super("toolbelt/dig:latest");
+        }
 
-            this.withStartupCheckStrategy(new StartupCheckStrategy() {
-                @Override
-                public StartupStatus checkStartupState(DockerClient dockerClient, String containerId) {
-                    InspectContainerResponse.ContainerState state = getCurrentState(dockerClient, containerId);
-                    if (!DockerStatus.isContainerStopped(state)) {
-                        return StartupStatus.NOT_YET_KNOWN;
-                    }
-                    return StartupStatus.SUCCESSFUL;
-                }
-            });
+        @Override
+        protected void configure() {
+            this.withStartupCheckStrategy(new OneShotStartupCheckStrategy());
             this.withCreateContainerCmdModifier(cmd -> {
-                cmd.withEntrypoint("getent", "hosts");
+                cmd.withEntrypoint("dig", "+noall", "+answer");
             });
         }
     }
