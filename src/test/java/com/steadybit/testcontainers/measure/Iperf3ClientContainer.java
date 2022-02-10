@@ -44,7 +44,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
 
     public int measureLoss() {
         try {
-            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p", Integer.toString(this.server.getIperf3Port()), "-u", "-t 1", "--bind",
+            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p", Integer.toString(this.server.getIperf3Port()), "-u", "-t 2", "--bind",
                     "0.0.0.0", "--reverse", "--cport", Integer.toString(this.dataPort), "--json" };
             ExecResult result = this.execInContainer(command);
             if (result.getExitCode() == 0) {

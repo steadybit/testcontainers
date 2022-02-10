@@ -59,8 +59,8 @@ public abstract class TrafficControl {
     private void handleError(Action action, String[] tcCommands, Result result) {
         List<String> notIgnored = new ArrayList<>(tcCommands.length);
         log.trace("TC-StdOut\n{}", result.stdOut);
-        log.trace("TC-StdErr\n{}", result.stErr);
-        try (Scanner scanner = new Scanner(result.getStErr())) {
+        log.trace("TC-StdErr\n{}", result.stdErr);
+        try (Scanner scanner = new Scanner(result.getStdErr())) {
             scanner.useDelimiter("\\n");
 
             while (scanner.hasNext()) {
@@ -263,12 +263,12 @@ public abstract class TrafficControl {
     protected static class Result {
         private final int exitcode;
         private final String stdOut;
-        private final String stErr;
+        private final String stdErr;
 
-        protected Result(int exitcode, String stdOut, String stErr) {
+        protected Result(int exitcode, String stdOut, String stdErr) {
             this.exitcode = exitcode;
             this.stdOut = stdOut;
-            this.stErr = stErr;
+            this.stdErr = stdErr;
         }
 
         private boolean isSuccessful() {
@@ -283,8 +283,8 @@ public abstract class TrafficControl {
             return stdOut;
         }
 
-        public String getStErr() {
-            return stErr;
+        public String getStdErr() {
+            return stdErr;
         }
     }
 }

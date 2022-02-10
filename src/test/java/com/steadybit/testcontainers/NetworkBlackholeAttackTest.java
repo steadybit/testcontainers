@@ -23,7 +23,7 @@ class NetworkBlackholeAttackTest {
     }
 
     @Test
-    void should_delay_egress_traffic_using_port_filter() {
+    void should_blackhole_traffic_using_port_filter() {
         //match
         Steadybit.networkBlackhole()
                 .port(target.getEchoPortInContainer())
@@ -38,7 +38,7 @@ class NetworkBlackholeAttackTest {
     }
 
     @Test
-    void should_delay_egress_traffic_using_ip_filter() {
+    void should_blackhole_traffic_using_ip_filter() {
         //match
         Steadybit.networkBlackhole()
                 .address(target.getEchoAddressInContainer())
@@ -53,7 +53,7 @@ class NetworkBlackholeAttackTest {
     }
 
     @Test
-    void should_delay_egress_traffic_using_ip_and_port_filter() {
+    void should_blackhole_traffic_using_ip_and_port_filter() {
         //match
         Steadybit.networkBlackhole()
                 .address(target.getEchoAddressInContainer())
