@@ -28,7 +28,11 @@ public class TestcontainersIpRule extends IpRule {
 
     private static class IpRuleContainer extends GenericContainer<TestcontainersIpRule.IpRuleContainer> {
         public IpRuleContainer() {
-            super("gaiadocker/iproute2:latest");
+            super("cilium/netperf:latest");
+        }
+
+        @Override
+        protected void configure() {
             this.withStartupCheckStrategy(new OneShotStartupCheckStrategy());
             this.withCreateContainerCmdModifier(cmd -> {
                 cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN, Capability.NET_RAW);

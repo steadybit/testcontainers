@@ -4,7 +4,6 @@
 
 package com.steadybit.testcontainers.measure;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -12,7 +11,6 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.function.Consumer;
 
 public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContainer> {
     private static final Logger log = LoggerFactory.getLogger(Iperf3ClientContainer.class);
@@ -22,7 +20,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
     private String maxBitrate = "500M";
 
     public Iperf3ClientContainer(Iperf3ServerContainer server) {
-        super("mlabbe/iperf3:3.9-r1-hc");
+        super("cilium/netperf:latest");
         this.server = server;
     }
 
@@ -40,12 +38,14 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
         return this.dataPort;
     }
 
+    public String getIperfClientAddress() {
+        return this.getCurrentContainerInfo().getNetworkSettings().getIpAddress();
+    }
+
     public int measureLoss() {
         try {
-            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p",
-                    Integer.toString(this.server.getIperf3Port()), "-u", "-t1", "--bind",
-                    "0.0.0.0",
-                    "--reverse", "--cport", Integer.toString(this.dataPort), "--json" };
+            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p", Integer.toString(this.server.getIperf3Port()), "-u", "-t 1", "--bind",
+                    "0.0.0.0", "--reverse", "--cport", Integer.toString(this.dataPort), "--json" };
             ExecResult result = this.execInContainer(command);
             if (result.getExitCode() == 0) {
                 JsonNode root = this.objectMapper.readTree(result.getStdout().replace("\n", ""));
@@ -59,8 +59,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
 
     public long measureBandwidth() {
         try {
-            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p",
-                    Integer.toString(this.server.getIperf3Port()), "-t 1", "--bind",
+            String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p", Integer.toString(this.server.getIperf3Port()), "-t 1", "--bind",
                     "0.0.0.0", "--udp", "--bitrate", maxBitrate, "--reverse", "--cport", Integer.toString(this.dataPort), "--json" };
             ExecResult result = this.execInContainer(command);
             if (result.getExitCode() == 0) {
@@ -77,12 +76,9 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
     protected void configure() {
         super.configure();
         this.setWaitStrategy(null);
-        this.withCreateContainerCmdModifier(new Consumer<CreateContainerCmd>() {
-            @Override
-            public void accept(CreateContainerCmd cmd) {
-                cmd.withEntrypoint("/bin/sh");
-                cmd.withTty(true);
-            }
+        this.withCreateContainerCmdModifier(cmd -> {
+            cmd.withEntrypoint("/bin/sh");
+            cmd.withTty(true);
         });
     }
 

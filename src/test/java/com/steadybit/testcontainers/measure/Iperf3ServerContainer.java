@@ -10,7 +10,7 @@ public class Iperf3ServerContainer extends GenericContainer<Iperf3ServerContaine
     private int port = 5201;
 
     public Iperf3ServerContainer() {
-        super("mlabbe/iperf3:3.9-r1-hc");
+        super("cilium/netperf:latest");
     }
 
     public Iperf3ServerContainer withIperf3Port(int iperf3Port) {
@@ -30,5 +30,8 @@ public class Iperf3ServerContainer extends GenericContainer<Iperf3ServerContaine
     protected void configure() {
         super.configure();
         this.withCommand("-s", "-p", String.valueOf(this.port));
+        this.withCreateContainerCmdModifier(cmd -> {
+            cmd.withEntrypoint("iperf3");
+        });
     }
 }

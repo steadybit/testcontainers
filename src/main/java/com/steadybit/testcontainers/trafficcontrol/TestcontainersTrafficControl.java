@@ -28,29 +28,24 @@ public class TestcontainersTrafficControl extends TrafficControl {
     }
 
     private static class TcContainer extends GenericContainer<TcContainer> {
-        private String[] tcCommands;
-
         public TcContainer() {
-            super("gaiadocker/iproute2:latest");
+            super("cilium/netperf:latest");
+        }
 
+        @Override
+        protected void configure() {
             this.withStartupCheckStrategy(new OneShotStartupCheckStrategy());
             this.withCreateContainerCmdModifier(cmd -> {
                 StringBuilder shCommand = new StringBuilder("(");
-                for (String tcCommand : tcCommands) {
+                for (String tcCommand : cmd.getCmd()) {
                     shCommand.append("echo '").append(tcCommand).append("';");
                 }
                 shCommand.append(") | tc -force -batch -");
 
                 cmd.getHostConfig().withCapAdd(Capability.NET_ADMIN, Capability.NET_RAW);
-                cmd.withEntrypoint("sh");
-                cmd.withCmd("-c", shCommand.toString());
+                cmd.withEntrypoint("sh", "-c");
+                cmd.withCmd(shCommand.toString());
             });
-        }
-
-        @Override
-        public TcContainer withCommand(String... tcCommands) {
-            this.tcCommands = tcCommands;
-            return this;
         }
 
         public Result getResult() {
