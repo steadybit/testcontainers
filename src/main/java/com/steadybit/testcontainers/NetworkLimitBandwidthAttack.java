@@ -9,6 +9,7 @@ public class NetworkLimitBandwidthAttack extends AbstractTrafficControlAttack {
 
     private NetworkLimitBandwidthAttack(Builder builder) {
         super(builder);
+        // todo validate bandwidth
         this.bandwidth = builder.bandwidth;
     }
 

@@ -10,6 +10,7 @@ public class NetworkCorruptPackagesAttack extends AbstractTrafficControlAttack {
 
     private NetworkCorruptPackagesAttack(Builder builder) {
         super(builder);
+        // todo validate corruptionPercentage should be between 0-100
         this.corruptionPercentage = builder.corruptionPercentage;
     }
 

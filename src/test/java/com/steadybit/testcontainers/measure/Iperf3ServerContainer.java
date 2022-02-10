@@ -18,11 +18,11 @@ public class Iperf3ServerContainer extends GenericContainer<Iperf3ServerContaine
         return this;
     }
 
-    int getIperf3Port() {
+    public int getIperf3Port() {
         return port;
     }
 
-    String getIperf3Address() {
+    public String getIperf3Address() {
         return this.getCurrentContainerInfo().getNetworkSettings().getIpAddress();
     }
 

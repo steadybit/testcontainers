@@ -10,6 +10,7 @@ public class NetworkLoosePackagesAttack extends AbstractTrafficControlAttack {
 
     private NetworkLoosePackagesAttack(Builder builder) {
         super(builder);
+        // todo validate lossPercentage should be between 0-100
         this.lossPercentage = builder.lossPercentage;
     }
 

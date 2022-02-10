@@ -19,6 +19,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Iperf3ServerContainer server;
     private int dataPort = 5000;
+    private String maxBitrate = "500M";
 
     public Iperf3ClientContainer(Iperf3ServerContainer server) {
         super("mlabbe/iperf3:3.9-r1-hc");
@@ -27,6 +28,11 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
 
     public Iperf3ClientContainer withDataPort(int port) {
         this.dataPort = port;
+        return this;
+    }
+
+    public Iperf3ClientContainer withMaxBitrate(String maxBitrate) {
+        this.maxBitrate = maxBitrate;
         return this;
     }
 
@@ -51,7 +57,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
         }
     }
 
-    public long measureBandwidth(String maxBitrate) {
+    public long measureBandwidth() {
         try {
             String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p",
                     Integer.toString(this.server.getIperf3Port()), "-t 1", "--bind",
