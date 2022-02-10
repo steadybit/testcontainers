@@ -3,7 +3,7 @@ package com.steadybit.testcontainers;
 import com.steadybit.testcontainers.measure.Iperf3ClientContainer;
 import com.steadybit.testcontainers.measure.Iperf3ServerContainer;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.assertj.core.data.Offset;
+import static org.assertj.core.data.Offset.offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -28,7 +28,7 @@ class NetworkLoosePackagesAttackTest {
                 .lossPercentage(20)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
                 });
         assertThat(tester.measureLoss()).isLessThan(5);
     }
@@ -39,19 +39,19 @@ class NetworkLoosePackagesAttackTest {
         //match
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
-                .destPort(target.getIperf3Port())
+                .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
                 });
 
         // mismatch
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
-                .destPort(target.getIperf3Port() + 999)
+                .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isLessThan(5);
                 });
         assertThat(tester.measureLoss()).isLessThan(5);
     }
@@ -62,10 +62,10 @@ class NetworkLoosePackagesAttackTest {
         //match
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
-                .destAddress(target.getIperf3Address())
+                .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
                 });
 
         // mismatch
@@ -74,7 +74,7 @@ class NetworkLoosePackagesAttackTest {
                 .destAddress("1.1.1.1")
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isLessThan(5);
                 });
         assertThat(tester.measureLoss()).isLessThan(5);
     }
@@ -85,30 +85,30 @@ class NetworkLoosePackagesAttackTest {
         //match
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
-                .destAddress(target.getIperf3Address())
+                .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
                 });
 
         // mismatch address
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
                 .destAddress("1.1.1.1")
-                .destPort(target.getIperf3Port())
+                .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isLessThan(5);
                 });
 
         // mismatch port
         Steadybit.networkLoosePackages()
                 .lossPercentage(20)
-                .destAddress(target.getIperf3Address())
-                .destPort(target.getIperf3Port() + 999)
+                .destAddress(tester.getIperfClientAddress())
+                .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, Offset.offset(5));
+                    assertThat(tester.measureLoss()).isLessThan(5);
                 });
 
         assertThat(tester.measureLoss()).isLessThan(5);

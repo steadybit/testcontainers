@@ -2,7 +2,7 @@ package com.steadybit.testcontainers;
 
 import com.steadybit.testcontainers.measure.EchoTcpContainer;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.assertj.core.data.Offset;
+import static org.assertj.core.data.Offset.offset;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -21,9 +21,9 @@ class NetworkDelayPackagesAttackTest {
 
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, offset(50L)));
 
-        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L));
+        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L));
     }
 
     @Test
@@ -34,15 +34,15 @@ class NetworkDelayPackagesAttackTest {
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destPort(target.getEchoPortInContainer())
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, offset(50L)));
 
         //mismatch
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destPort(target.getEchoPortInContainer() + 999)
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L)));
 
-        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L));
+        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L));
     }
 
     @Test
@@ -53,15 +53,15 @@ class NetworkDelayPackagesAttackTest {
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destAddress(target.getEchoAddressInContainer())
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, offset(50L)));
 
         //mismatch
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destAddress("1.1.1.1")
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L)));
 
-        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L));
+        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L));
     }
 
     @Test
@@ -73,22 +73,22 @@ class NetworkDelayPackagesAttackTest {
                 .delay(Duration.ofMillis(200))
                 .destAddress(target.getEchoAddressInContainer())
                 .destPort(target.getEchoPortInContainer())
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, offset(50L)));
 
         //mismatch address
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destAddress("1.1.1.1")
                 .destPort(target.getEchoPortInContainer())
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L)));
 
         //mismatch port
         Steadybit.networkDelayPackages()
                 .delay(Duration.ofMillis(200))
                 .destAddress(target.getEchoAddressInContainer())
                 .destPort(target.getEchoPortInContainer() + 999)
-                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L)));
+                .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L)));
 
-        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, Offset.offset(50L));
+        assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack, offset(50L));
     }
 }
