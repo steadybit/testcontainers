@@ -1,41 +1,77 @@
 package com.steadybit.testcontainers;
 
-import com.steadybit.testcontainers.measure.Iperf3ClientContainer;
-import com.steadybit.testcontainers.measure.Iperf3ServerContainer;
+import com.steadybit.testcontainers.measure.EchoTcpContainer;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.assertj.core.data.Percentage;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 class NetworkBlackholeAttackTest {
-
-    //    @Container
-    //    private static final TomcatContainer target = new TomcatContainer();
     @Container
-    private static final Iperf3ServerContainer target = new Iperf3ServerContainer();
-    @Container
-    private static final Iperf3ClientContainer tester = new Iperf3ClientContainer(target);
-
-    private long normalBandwidth;
-
-    @BeforeEach
-    void setUp() {
-        tester.stopRunningMeasures();
-
-        this.normalBandwidth = (tester.measureBandwidth() + tester.measureBandwidth() + tester.measureBandwidth()) / 3;
-    }
+    private final EchoTcpContainer target = new EchoTcpContainer();
 
     @Test
     void should_blackhole_all_traffic() {
         Steadybit.networkBlackhole()
-                .port(target.getIperf3Port())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isEqualTo(0);
+                    assertThat(target.ping()).isFalse();
                 });
-        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth, Percentage.withPercentage(10));
+
+        assertThat(target.ping()).isTrue();
+    }
+
+    @Test
+    void should_delay_egress_traffic_using_port_filter() {
+        //match
+        Steadybit.networkBlackhole()
+                .port(target.getEchoPortInContainer())
+                .forContainers(target).exec(() -> assertThat(target.ping()).isFalse());
+
+        //mismatch
+        Steadybit.networkBlackhole()
+                .port(target.getEchoPortInContainer() + 999)
+                .forContainers(target).exec(() -> assertThat(target.ping()).isTrue());
+
+        assertThat(target.ping()).isTrue();
+    }
+
+    @Test
+    void should_delay_egress_traffic_using_ip_filter() {
+        //match
+        Steadybit.networkBlackhole()
+                .address(target.getEchoAddressInContainer())
+                .forContainers(target).exec(() -> assertThat(target.ping()).isFalse());
+
+        //mismatch
+        Steadybit.networkBlackhole()
+                .address("1.1.1.1")
+                .forContainers(target).exec(() -> assertThat(target.ping()).isTrue());
+
+        assertThat(target.ping()).isTrue();
+    }
+
+    @Test
+    void should_delay_egress_traffic_using_ip_and_port_filter() {
+        //match
+        Steadybit.networkBlackhole()
+                .address(target.getEchoAddressInContainer())
+                .port(target.getEchoPortInContainer())
+                .forContainers(target).exec(() -> assertThat(target.ping()).isFalse());
+
+        //mismatch address
+        Steadybit.networkBlackhole()
+                .address("1.1.1.1")
+                .port(target.getEchoPortInContainer())
+                .forContainers(target).exec(() -> assertThat(target.ping()).isTrue());
+
+        //mismatch port
+        Steadybit.networkBlackhole()
+                .address(target.getEchoAddressInContainer())
+                .port(target.getEchoPortInContainer() + 999)
+                .forContainers(target).exec(() -> assertThat(target.ping()).isTrue());
+
+        assertThat(target.ping()).isTrue();
     }
 }

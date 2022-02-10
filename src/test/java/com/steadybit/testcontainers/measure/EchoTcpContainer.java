@@ -11,10 +11,13 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.time.Duration;
 
 public class EchoTcpContainer extends GenericContainer<EchoTcpContainer> {
     private final EchoTCPClient echoClient = new EchoTCPClient();
     private int port = 2000;
+    private Duration pingTimeout = Duration.ofSeconds(1);
 
     public EchoTcpContainer() {
         super("alpine/socat:latest");
@@ -22,6 +25,11 @@ public class EchoTcpContainer extends GenericContainer<EchoTcpContainer> {
 
     public EchoTcpContainer withEchoPort(int port) {
         this.port = port;
+        return this;
+    }
+
+    public EchoTcpContainer withPingTimeout(Duration pingTimeout) {
+        this.pingTimeout = pingTimeout;
         return this;
     }
 
@@ -58,6 +66,25 @@ public class EchoTcpContainer extends GenericContainer<EchoTcpContainer> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean ping() {
+        EchoTCPClient echo = this.getEchoClient();
+        byte[] message = "Hello World".getBytes();
+        byte[] received = new byte[message.length];
+
+        try {
+            this.echoClient.setSoTimeout((int) pingTimeout.toMillis());
+            IOUtils.write(message, echo.getOutputStream());
+            IOUtils.read(echo.getInputStream(), received, 0, received.length);
+            assertThat(received).isEqualTo(message);
+        } catch (IOException e) {
+            if (e instanceof SocketTimeoutException) {
+                return false;
+            }
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
     @Override
