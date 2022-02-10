@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>testcontainers</artifactId>
-    <groupId>com.steadybit.testcontainers</groupId>
+    <artifactId>steadybit-testcontainers</artifactId>
+    <groupId>com.steadybit</groupId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
@@ -26,6 +26,7 @@
         <testcontainers-bom.version>1.16.3</testcontainers-bom.version>
         <assertj-core.version>3.22.0</assertj-core.version>
         <logback-classic.version>1.2.10</logback-classic.version>
+        <awaitility.version>4.1.1</awaitility.version>
 
         <!--plugins-->
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
@@ -36,6 +37,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
+        <commons-net.version>3.8.0</commons-net.version>
     </properties>
 
     <organization>
@@ -125,6 +127,17 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${commons-net.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

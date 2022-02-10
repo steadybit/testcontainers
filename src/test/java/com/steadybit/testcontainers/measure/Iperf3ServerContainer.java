@@ -1,0 +1,34 @@
+/*
+ * Copyright 2021 steadybit GmbH. All rights reserved.
+ */
+
+package com.steadybit.testcontainers.measure;
+
+import org.testcontainers.containers.GenericContainer;
+
+public class Iperf3ServerContainer extends GenericContainer<Iperf3ServerContainer> {
+    private int port = 5201;
+
+    public Iperf3ServerContainer() {
+        super("mlabbe/iperf3:3.9-r1-hc");
+    }
+
+    public Iperf3ServerContainer withIperf3Port(int iperf3Port) {
+        this.port = iperf3Port;
+        return this;
+    }
+
+    int getIperf3Port() {
+        return port;
+    }
+
+    String getIperf3Address() {
+        return this.getCurrentContainerInfo().getNetworkSettings().getIpAddress();
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+        this.withCommand("-s", "-p", String.valueOf(this.port));
+    }
+}

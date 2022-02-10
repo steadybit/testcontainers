@@ -4,25 +4,33 @@ import org.testcontainers.containers.Container;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public abstract class ContainerAttack<SELF extends ContainerAttack<SELF>> {
-    protected ArrayList<Container<?>> containers;
-
-    public SELF forContainers(Container<?>... containers) {
-        this.containers = new ArrayList<>(Arrays.asList(containers));
-        return (SELF) this;
-    }
-
-    public void exec(Runnable run) {
-        start();
-        try {
+public interface ContainerAttack extends AutoCloseable {
+    default void exec(Runnable run) {
+        try (ContainerAttack self = this) {
+            this.start();
             run.run();
-        }finally {
-            stop();
         }
     }
 
-    public abstract void stop();
+    void stop();
 
-    public abstract void start();
+    void start();
+
+    @Override
+    default void close() {
+        this.stop();
+    }
+
+    abstract class Builder<T extends ContainerAttack> {
+        protected List<Container<?>> containers;
+
+        public T forContainers(Container<?>... containers) {
+            this.containers = new ArrayList<>(Arrays.asList(containers));
+            return this.build();
+        }
+
+        protected abstract T build();
+    }
 }
