@@ -3,7 +3,10 @@ package com.steadybit.testcontainers;
 import com.steadybit.testcontainers.measure.Iperf3ClientContainer;
 import com.steadybit.testcontainers.measure.Iperf3ServerContainer;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.data.Offset.offset;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -108,5 +111,28 @@ class NetworkCorruptPackagesAttackTest {
                 });
 
         assertThat(tester.measureLoss()).isLessThan(5);
+    }
+
+    @Test
+    void should_validate_corruptionPercentage() {
+        Exception exceptionToLow = assertThrows(RuntimeException.class, () -> {
+            Steadybit.networkCorruptPackages()
+                    .corruptionPercentage(-1)
+                    .forContainers(target);
+        });
+        assertThat(exceptionToLow.getMessage()).isEqualTo("corruptionPercentage should be between 0-100");
+
+        Exception exceptionToHigh = assertThrows(RuntimeException.class, () -> {
+            Steadybit.networkCorruptPackages()
+                    .corruptionPercentage(101)
+                    .forContainers(target);
+        });
+        assertThat(exceptionToHigh.getMessage()).isEqualTo("corruptionPercentage should be between 0-100");
+
+        assertDoesNotThrow(() -> {
+            Steadybit.networkCorruptPackages()
+                    .corruptionPercentage(99)
+                    .forContainers(target);
+        });
     }
 }
