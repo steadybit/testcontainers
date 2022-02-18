@@ -5,6 +5,8 @@ import com.steadybit.testcontainers.trafficcontrol.TestcontainersTrafficControl;
 import com.steadybit.testcontainers.trafficcontrol.TrafficControl;
 import static com.steadybit.testcontainers.trafficcontrol.TrafficControl.Filter.U32;
 import static com.steadybit.testcontainers.trafficcontrol.TrafficControl.Protocol.IP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractTrafficControlAttack implements ContainerAttack {
+    private static final Logger log = LoggerFactory.getLogger(AbstractTrafficControlAttack.class);
     protected final static String HANDLE_AFFECTED = "1:3";
     private final List<Container<?>> containers;
     private final String networkInterface;
@@ -36,6 +39,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
             TrafficControl.RuleSet rulesToAdd = this.getRules(container);
             this.rules.put(container.getContainerId(), rulesToAdd);
             new TestcontainersTrafficControl(container.getContainerId()).add(rulesToAdd);
+            log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
         }
     }
 
@@ -45,6 +49,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
             TrafficControl.RuleSet rulesToDelete = this.rules.get(container.getContainerId());
             if (rulesToDelete != null) {
                 new TestcontainersTrafficControl(container.getContainerId()).delete(rulesToDelete);
+                log.info("Stopped {} on {}", this.getClass().getSimpleName(), container.getContainerName());
             }
         }
     }
@@ -112,5 +117,4 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
             return this;
         }
     }
-
 }

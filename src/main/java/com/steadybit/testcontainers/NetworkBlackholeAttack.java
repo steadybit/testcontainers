@@ -2,6 +2,8 @@ package com.steadybit.testcontainers;
 
 import com.steadybit.testcontainers.dns.TestcontainersDnsResolver;
 import com.steadybit.testcontainers.iprule.TestcontainersIpRule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Container;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class NetworkBlackholeAttack implements ContainerAttack {
+    private static final Logger log = LoggerFactory.getLogger(NetworkBlackholeAttack.class);
     private final List<Container<?>> containers;
     private final Set<String> addresses;
     private final Integer port;
@@ -31,6 +34,7 @@ public class NetworkBlackholeAttack implements ContainerAttack {
             List<String[]> rulesToAdd = this.getRules(container);
             this.rules.put(container.getContainerId(), rulesToAdd);
             new TestcontainersIpRule(container.getContainerId()).add(rulesToAdd);
+            log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
         }
     }
 
@@ -40,6 +44,7 @@ public class NetworkBlackholeAttack implements ContainerAttack {
             List<String[]> rulesToDelete = this.rules.get(container.getContainerId());
             if (rulesToDelete != null) {
                 new TestcontainersIpRule(container.getContainerId()).delete(rulesToDelete);
+                log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
             }
         }
     }

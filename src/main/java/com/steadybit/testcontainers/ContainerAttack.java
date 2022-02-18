@@ -5,13 +5,22 @@ import org.testcontainers.containers.Container;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface ContainerAttack extends AutoCloseable {
-    default void exec(Runnable run) {
+
+    default <T> T exec(Supplier<T> run) {
         try (ContainerAttack self = this) {
             this.start();
-            run.run();
+            return run.get();
         }
+    }
+
+    default void exec(Runnable run) {
+        this.exec(() -> {
+            run.run();
+            return null;
+        });
     }
 
     void stop();
