@@ -26,8 +26,7 @@ class NetworkLoosePackagesAttackTest {
 
     @Test
     void should_loose_some_packages() {
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .forContainers(target)
                 .exec(() -> {
                     assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
@@ -39,8 +38,7 @@ class NetworkLoosePackagesAttackTest {
     void should_loose_some_packages_using_port_filter() {
 
         //match
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
@@ -48,8 +46,7 @@ class NetworkLoosePackagesAttackTest {
                 });
 
         // mismatch
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
                 .exec(() -> {
@@ -62,8 +59,7 @@ class NetworkLoosePackagesAttackTest {
     void should_loose_some_packages_using_ip_filter() {
 
         //match
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
@@ -71,8 +67,7 @@ class NetworkLoosePackagesAttackTest {
                 });
 
         // mismatch
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destAddress("1.1.1.1")
                 .forContainers(target)
                 .exec(() -> {
@@ -85,8 +80,7 @@ class NetworkLoosePackagesAttackTest {
     void should_loose_some_packages_using_ip_and_port_filter() {
 
         //match
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
@@ -94,8 +88,7 @@ class NetworkLoosePackagesAttackTest {
                 });
 
         // mismatch address
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destAddress("1.1.1.1")
                 .destPort(tester.getDataPort())
                 .forContainers(target)
@@ -104,8 +97,7 @@ class NetworkLoosePackagesAttackTest {
                 });
 
         // mismatch port
-        Steadybit.networkLoosePackages()
-                .lossPercentage(20)
+        Steadybit.networkLoosePackages(20)
                 .destAddress(tester.getIperfClientAddress())
                 .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
@@ -119,22 +111,19 @@ class NetworkLoosePackagesAttackTest {
     @Test
     void should_validate_networkLoosePackages() {
         Exception exceptionToLow = assertThrows(RuntimeException.class, () -> {
-            Steadybit.networkLoosePackages()
-                    .lossPercentage(-1)
+            Steadybit.networkLoosePackages(-1)
                     .forContainers(target);
         });
-        assertThat(exceptionToLow.getMessage()).isEqualTo("lossPercentage should be between 0-100");
+        assertThat(exceptionToLow.getMessage()).isEqualTo("lossPercentage must be between 0-100");
 
         Exception exceptionToHigh = assertThrows(RuntimeException.class, () -> {
-            Steadybit.networkLoosePackages()
-                    .lossPercentage(101)
+            Steadybit.networkLoosePackages(101)
                     .forContainers(target);
         });
-        assertThat(exceptionToHigh.getMessage()).isEqualTo("lossPercentage should be between 0-100");
+        assertThat(exceptionToHigh.getMessage()).isEqualTo("lossPercentage must be between 0-100");
 
         assertDoesNotThrow(() -> {
-            Steadybit.networkLoosePackages()
-                    .lossPercentage(99)
+            Steadybit.networkLoosePackages(99)
                     .forContainers(target);
         });
     }

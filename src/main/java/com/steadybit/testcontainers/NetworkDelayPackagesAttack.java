@@ -13,8 +13,11 @@ public class NetworkDelayPackagesAttack extends AbstractTrafficControlAttack {
 
     private NetworkDelayPackagesAttack(Builder builder) {
         super(builder);
+        if (builder.delay == null) {
+            throw new IllegalArgumentException("delay must not be null");
+        }
         this.delay = builder.delay;
-        this.jitter = builder.jitter;
+        this.jitter = builder.jitter != null ? builder.jitter : Duration.ZERO;
     }
 
     @Override

@@ -10,9 +10,8 @@ public class NetworkCorruptPackagesAttack extends AbstractTrafficControlAttack {
 
     private NetworkCorruptPackagesAttack(Builder builder) {
         super(builder);
-        // validate corruptionPercentage should be between 0-100
         if (builder.corruptionPercentage < 0 || builder.corruptionPercentage > 100) {
-            throw new RuntimeException("corruptionPercentage should be between 0-100");
+            throw new IllegalArgumentException("corruptionPercentage must be between 0-100");
         }
         this.corruptionPercentage = builder.corruptionPercentage;
     }

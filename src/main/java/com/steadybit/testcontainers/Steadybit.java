@@ -1,28 +1,48 @@
 package com.steadybit.testcontainers;
 
+import java.time.Duration;
+
 public class Steadybit {
     private static final Integer DEFAULT_DNS_PORT = 53;
 
-    public static NetworkDelayPackagesAttack.Builder networkDelayPackages() {
-        return new NetworkDelayPackagesAttack.Builder();
+    /**
+     * Delays egress tcp/udp network packages for containers (on eth0 by default)
+     */
+    public static NetworkDelayPackagesAttack.Builder networkDelayPackages(Duration delay) {
+        return new NetworkDelayPackagesAttack.Builder().delay(delay);
     }
 
-    public static NetworkLoosePackagesAttack.Builder networkLoosePackages() {
-        return new NetworkLoosePackagesAttack.Builder();
+    /**
+     * Looses egress tcp/udp network packages for containers (on eth0 by default)
+     */
+    public static NetworkLoosePackagesAttack.Builder networkLoosePackages(int lossPercentage) {
+        return new NetworkLoosePackagesAttack.Builder().lossPercentage(lossPercentage);
     }
 
-    public static NetworkCorruptPackagesAttack.Builder networkCorruptPackages() {
-        return new NetworkCorruptPackagesAttack.Builder();
+    /**
+     * Corrupts egress tcp/udp network packages for containers (on eth0 by default)
+     */
+    public static NetworkCorruptPackagesAttack.Builder networkCorruptPackages(int corruptionPercentage) {
+        return new NetworkCorruptPackagesAttack.Builder().corruptionPercentage(corruptionPercentage);
     }
 
-    public static NetworkLimitBandwidthAttack.Builder networkLimitBandwidth() {
-        return new NetworkLimitBandwidthAttack.Builder();
+    /**
+     * Limits tcp/udp network bandwidth for containers (on eth0 by default)
+     */
+    public static NetworkLimitBandwidthAttack.Builder networkLimitBandwidth(Bandwidth bandwidth) {
+        return new NetworkLimitBandwidthAttack.Builder().bandwidth(bandwidth);
     }
 
+    /**
+     * Blocks all network traffic for containers
+     */
     public static NetworkBlackholeAttack.Builder networkBlackhole() {
         return new NetworkBlackholeAttack.Builder();
     }
 
+    /**
+     * Blocks all network traffic for containers on dns port (53)
+     */
     public static NetworkBlackholeAttack.Builder networkBlockDns() {
         return new NetworkBlackholeAttack.Builder().port(DEFAULT_DNS_PORT);
     }

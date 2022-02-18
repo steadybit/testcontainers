@@ -57,14 +57,14 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
         }
     }
 
-    public long measureBandwidth() {
+    public int measureBandwidth() {
         try {
             String[] command = { "iperf3", "-c", this.server.getIperf3Address(), "-p", Integer.toString(this.server.getIperf3Port()), "-t 1", "--bind",
                     "0.0.0.0", "--udp", "--bitrate", maxBitrate, "--reverse", "--cport", Integer.toString(this.dataPort), "--json" };
             ExecResult result = this.execInContainer(command);
             if (result.getExitCode() == 0) {
                 JsonNode root = this.objectMapper.readTree(result.getStdout().replace("\n", ""));
-                return Math.round(root.at("/end/sum/bits_per_second").asDouble() / 1_000_000);
+                return Math.round(root.at("/end/sum/bits_per_second").floatValue() / 1_000_000.0f);
             }
             throw new RuntimeException("Execution [" + String.join(" ", command) + "] failed: RC=" + result.getExitCode() + " " + result.getStderr());
         } catch (IOException | InterruptedException e) {

@@ -28,6 +28,9 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
 
     protected AbstractTrafficControlAttack(Builder<? extends AbstractTrafficControlAttack> builder) {
         this.containers = builder.containers;
+        if (builder.networkInterface == null || builder.networkInterface.isEmpty()) {
+            throw new IllegalArgumentException("networkInterface must not be null or empry");
+        }
         this.networkInterface = builder.networkInterface;
         this.destAddresses = builder.destAddresses;
         this.destPort = builder.destPort;
