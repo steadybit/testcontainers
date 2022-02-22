@@ -6,7 +6,7 @@ Steadybit Testcontainers is a helper library to the [Testcontainers Project](htt
 
 ## Getting Started
 
-> We have a [BlogPost discussing Resilience Tests with Testcontainers](https://www.steadybit.com/blog/resilience-testing-using-testcontainers/) which gives a more detailed explanation.
+> We have a [blog post discussing "Resilience Tests with Testcontainers"](https://www.steadybit.com/blog/resilience-testing-using-testcontainers/) which gives a more detailed explanation.
 
 ### 1. Add Steadybit Testcontainers to your project:
 Add this to the test dependencies in your `pom.xml`:
@@ -25,7 +25,6 @@ Here is an example for delaying the Redis traffic:
 ```java
 @Testcontainers
 public class RedisBackedCacheIntTest {
-
     private RedisBackedCache underTest;
 
     @Container
