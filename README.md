@@ -42,7 +42,8 @@ public class RedisBackedCacheIntTest {
         Optional<String> foundObject = Steadybit.networkDelayPackages(Duration.ofSeconds(2))
                 .forContainers(redis)
                 .exec(() -> {
-                    //this code runs after the attack was started as soon as this codes completes the attack will be stopped.
+                    //this code runs after the attack was started.
+                    //As soon as this lambda exits the attack will be stopped.
                     return cache.get("foo", String.class);
                 });
 
