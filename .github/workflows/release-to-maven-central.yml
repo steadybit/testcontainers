@@ -32,11 +32,11 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PRIVATE_KEY_PASSWORD }}
         run: mvn -B deploy -Prelease -D"revision=${{ github.event.inputs.releaseversion }}"
 
-#      - name: Generate changelog
-#        id: changelog
-#        uses: metcalfc/changelog-generator@v3.0.0
-#        with:
-#          myToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v3.0.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -45,8 +45,8 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.releaseversion }}
           release_name: ${{ github.event.inputs.releaseversion }}
-#          body: |
-#            ### Changes
-#            ${{ steps.changelog.outputs.changelog }}
+          body: |
+            ### Changes
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
