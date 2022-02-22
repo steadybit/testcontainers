@@ -28,7 +28,7 @@ class NetworkCorruptPackagesAttackTest {
         Steadybit.networkCorruptPackages(20)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(10));
                 });
         assertThat(tester.measureLoss()).isLessThan(5);
     }
@@ -40,7 +40,7 @@ class NetworkCorruptPackagesAttackTest {
                 .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(10));
                 });
 
         // mismatch
@@ -60,7 +60,7 @@ class NetworkCorruptPackagesAttackTest {
                 .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(10));
                 });
 
         // mismatch
@@ -80,7 +80,7 @@ class NetworkCorruptPackagesAttackTest {
                 .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureLoss()).isCloseTo(20, offset(5));
+                    assertThat(tester.measureLoss()).isCloseTo(20, offset(10));
                 });
 
         // mismatch address
