@@ -19,13 +19,17 @@ jobs:
           distribution: 'zulu'
           java-version: '8'
           cache: 'maven'
-          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.MAVEN_GPG_PRIVATE_KEY_PASSWORD }}
           server-id: 'ossrh'
-          server-username: ${{ secrets.MAVEN_SERVER_OSSRH_USERNAME }}
-          server-password: ${{ secrets.MAVEN_SERVER_OSSRH_PASSWORD }}
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Build with Maven
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_SERVER_OSSRH_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_SERVER_OSSRH_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PRIVATE_KEY_PASSWORD }}
         run: mvn -B deploy -Prelease -D"revision=${{ github.event.inputs.releaseversion }}"
 
       - name: Generate changelog
