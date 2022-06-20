@@ -37,14 +37,14 @@ public class RedisBackedCacheIntTest {
 
     @Test
     public void testFindingAnInsertedValue() {
-        cache.put("foo", "FOO");
+        underTest.put("foo", "FOO");
 
         Optional<String> foundObject = Steadybit.networkDelayPackages(Duration.ofSeconds(2))
                 .forContainers(redis)
                 .exec(() -> {
                     //this code runs after the attack was started.
                     //As soon as this lambda exits the attack will be stopped.
-                    return cache.get("foo", String.class);
+                    return underTest.get("foo", String.class);
                 });
 
         assertTrue("When an object in the cache is retrieved, it can be found", foundObject.isPresent());
