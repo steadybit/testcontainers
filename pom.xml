@@ -22,11 +22,12 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!--dependencies-->
-        <junit-bom.version>5.8.2</junit-bom.version>
-        <testcontainers-bom.version>1.16.3</testcontainers-bom.version>
-        <assertj-core.version>3.22.0</assertj-core.version>
-        <logback-classic.version>1.2.10</logback-classic.version>
-        <awaitility.version>4.1.1</awaitility.version>
+        <junit-bom.version>5.9.2</junit-bom.version>
+        <testcontainers-bom.version>1.17.6</testcontainers-bom.version>
+        <assertj-core.version>3.24.2</assertj-core.version>
+        <logback-classic.version>1.4.5</logback-classic.version>
+        <awaitility.version>4.2.0</awaitility.version>
+        <commons-net.version>3.9.0</commons-net.version>
 
         <!--plugins-->
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
@@ -37,7 +38,6 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
-        <commons-net.version>3.8.0</commons-net.version>
     </properties>
 
     <organization>

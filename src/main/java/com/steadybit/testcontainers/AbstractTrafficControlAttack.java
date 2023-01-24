@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public abstract class AbstractTrafficControlAttack implements ContainerAttack {
     private static final Logger log = LoggerFactory.getLogger(AbstractTrafficControlAttack.class);
@@ -26,6 +27,8 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
     private final Integer destPort;
     private final Map<String, TrafficControl.RuleSet> rules = new HashMap<>();
 
+    private final Function<String, TrafficControl> factory;
+
     protected AbstractTrafficControlAttack(Builder<? extends AbstractTrafficControlAttack> builder) {
         this.containers = builder.containers;
         if (builder.networkInterface == null || builder.networkInterface.isEmpty()) {
@@ -34,6 +37,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
         this.networkInterface = builder.networkInterface;
         this.destAddresses = builder.destAddresses;
         this.destPort = builder.destPort;
+        this.factory = builder.factory;
     }
 
     @Override
@@ -41,7 +45,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
         for (Container<?> container : this.containers) {
             TrafficControl.RuleSet rulesToAdd = this.getRules(container);
             this.rules.put(container.getContainerId(), rulesToAdd);
-            new TestcontainersTrafficControl(container.getContainerId()).add(rulesToAdd);
+            factory.apply(container.getContainerId()).add(rulesToAdd);
             log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
         }
     }
@@ -51,7 +55,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
         for (Container<?> container : this.containers) {
             TrafficControl.RuleSet rulesToDelete = this.rules.get(container.getContainerId());
             if (rulesToDelete != null) {
-                new TestcontainersTrafficControl(container.getContainerId()).delete(rulesToDelete);
+                factory.apply(container.getContainerId()).delete(rulesToDelete);
                 log.info("Stopped {} on {}", this.getClass().getSimpleName(), container.getContainerName());
             }
         }
@@ -98,6 +102,7 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
     }
 
     public static abstract class Builder<T extends AbstractTrafficControlAttack> extends ContainerAttack.Builder<T> {
+        public Function<String, TrafficControl> factory = TestcontainersTrafficControl::forContainer;
         private String networkInterface = "eth0";
         private Set<String> destAddresses = Collections.emptySet();
         private Integer destPort = null;
@@ -117,6 +122,11 @@ public abstract class AbstractTrafficControlAttack implements ContainerAttack {
 
         public Builder<T> destPort(Integer destPort) {
             this.destPort = destPort;
+            return this;
+        }
+
+        public Builder<T> factory(Function<String, TrafficControl> factory) {
+            this.factory = factory;
             return this;
         }
     }

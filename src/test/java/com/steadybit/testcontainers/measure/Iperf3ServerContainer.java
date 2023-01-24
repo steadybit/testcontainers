@@ -10,7 +10,7 @@ public class Iperf3ServerContainer extends GenericContainer<Iperf3ServerContaine
     private int port = 5201;
 
     public Iperf3ServerContainer() {
-        super("cilium/netperf:latest");
+        super("taoyou/iperf3-alpine:latest");
     }
 
     public Iperf3ServerContainer withIperf3Port(int iperf3Port) {

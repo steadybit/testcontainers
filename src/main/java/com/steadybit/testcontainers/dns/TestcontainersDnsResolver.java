@@ -78,10 +78,9 @@ public class TestcontainersDnsResolver {
             return;
         }
 
-        DigContainer container = new DigContainer()
+        try (DigContainer container = new DigContainer("praqma/network-multitool:latest")
                 .withCommand(unresolved.toArray(new String[0]))
-                .withNetworkMode("container:" + targetContainerId);
-        try {
+                .withNetworkMode("container:" + targetContainerId)) {
             container.start();
             try (Scanner scanner = new Scanner(container.getLogs(OutputFrame.OutputType.STDOUT))) {
                 while (scanner.hasNext()) {
@@ -95,15 +94,12 @@ public class TestcontainersDnsResolver {
                     unresolved.remove(hostname.substring(0, hostname.length() - 1));
                 }
             }
-
-        } finally {
-            container.stop();
         }
     }
 
     private static class DigContainer extends GenericContainer<DigContainer> {
-        public DigContainer() {
-            super("toolbelt/dig:latest");
+        public DigContainer(String image) {
+            super(image);
         }
 
         @Override

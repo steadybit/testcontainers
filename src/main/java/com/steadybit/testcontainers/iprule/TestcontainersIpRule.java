@@ -8,28 +8,46 @@ import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 
 public class TestcontainersIpRule extends IpRule {
     private final String containerId;
+    private final String image;
 
-    public TestcontainersIpRule(String containerId) {
+    private TestcontainersIpRule(String image, String containerId) {
+        this.image = image;
         this.containerId = containerId;
+    }
+
+    public static TestcontainersIpRule forContainer(String containerId) {
+        return TestcontainersIpRule.usingImage("praqma/network-multitool:latest").forContainer(containerId);
+    }
+
+    public static TestcontainersIpRule.ImageSpec usingImage(String image) {
+        return new TestcontainersIpRule.ImageSpec(image);
+    }
+
+    public static class ImageSpec {
+        private final String image;
+
+        private ImageSpec(String image) {
+            this.image = image;
+        }
+
+        public TestcontainersIpRule forContainer(String containerId) {
+            return new TestcontainersIpRule(this.image, containerId);
+        }
     }
 
     @Override
     protected Result executeBatch(String... ipRuleCommands) {
-        TestcontainersIpRule.IpRuleContainer container = new TestcontainersIpRule.IpRuleContainer()
+        try (IpRuleContainer container = new IpRuleContainer(this.image)
                 .withCommand(ipRuleCommands)
-                .withNetworkMode("container:" + containerId);
-
-        try {
+                .withNetworkMode("container:" + containerId)) {
             container.start();
             return container.getResult();
-        } finally {
-            container.stop();
         }
     }
 
     private static class IpRuleContainer extends GenericContainer<TestcontainersIpRule.IpRuleContainer> {
-        public IpRuleContainer() {
-            super("cilium/netperf:latest");
+        public IpRuleContainer(String image) {
+            super(image);
         }
 
         @Override

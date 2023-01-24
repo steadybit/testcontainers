@@ -1,6 +1,7 @@
 package com.steadybit.testcontainers;
 
 import com.steadybit.testcontainers.measure.EchoTcpContainer;
+import com.steadybit.testcontainers.trafficcontrol.TestcontainersTrafficControl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ class NetworkDelayPackagesAttackTest {
 
         //match
         Steadybit.networkDelayPackages(Duration.ofMillis(200))
+                .factory(containerId -> TestcontainersTrafficControl.usingImage("praqma/network-multitool:latest").forContainer(containerId))
                 .destPort(target.getEchoPortInContainer())
                 .forContainers(target).exec(() -> assertThat(target.measureRoundtrip()).isCloseTo(withoutAttack + 200L, offset(50L)));
 

@@ -1,5 +1,6 @@
 package com.steadybit.testcontainers;
 
+import com.steadybit.testcontainers.iprule.TestcontainersIpRule;
 import com.steadybit.testcontainers.measure.EchoTcpContainer;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ class NetworkBlackholeAttackTest {
         //match
         Steadybit.networkBlackhole()
                 .port(target.getEchoPortInContainer())
+                .factory(containerId -> TestcontainersIpRule.usingImage("praqma/network-multitool:latest").forContainer(containerId))
                 .forContainers(target).exec(() -> assertThat(target.ping()).isFalse());
 
         //mismatch

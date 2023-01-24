@@ -8,14 +8,36 @@ import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 
 public class TestcontainersTrafficControl extends TrafficControl {
     private final String containerId;
+    private final String image;
 
-    public TestcontainersTrafficControl(String containerId) {
+    private TestcontainersTrafficControl(String image, String containerId) {
         this.containerId = containerId;
+        this.image = image;
+    }
+
+    public static TestcontainersTrafficControl forContainer(String containerId) {
+        return TestcontainersTrafficControl.usingImage("praqma/network-multitool:latest").forContainer(containerId);
+    }
+
+    public static TestcontainersTrafficControl.ImageSpec usingImage(String image) {
+        return new TestcontainersTrafficControl.ImageSpec(image);
+    }
+
+    public static class ImageSpec {
+        private final String image;
+
+        private ImageSpec(String image) {
+            this.image = image;
+        }
+
+        public TestcontainersTrafficControl forContainer(String containerId) {
+            return new TestcontainersTrafficControl(this.image, containerId);
+        }
     }
 
     @Override
     protected Result executeBatch(String... tcCommands) {
-        TcContainer container = new TcContainer()
+        TcContainer container = new TcContainer(this.image)
                 .withCommand(tcCommands)
                 .withNetworkMode("container:" + containerId);
 
@@ -28,8 +50,8 @@ public class TestcontainersTrafficControl extends TrafficControl {
     }
 
     private static class TcContainer extends GenericContainer<TcContainer> {
-        public TcContainer() {
-            super("cilium/netperf:latest");
+        public TcContainer(String dockerImageName) {
+            super(dockerImageName);
         }
 
         @Override
@@ -56,4 +78,5 @@ public class TestcontainersTrafficControl extends TrafficControl {
             );
         }
     }
+
 }

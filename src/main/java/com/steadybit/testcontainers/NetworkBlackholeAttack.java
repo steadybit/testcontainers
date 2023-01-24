@@ -1,6 +1,7 @@
 package com.steadybit.testcontainers;
 
 import com.steadybit.testcontainers.dns.TestcontainersDnsResolver;
+import com.steadybit.testcontainers.iprule.IpRule;
 import com.steadybit.testcontainers.iprule.TestcontainersIpRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public class NetworkBlackholeAttack implements ContainerAttack {
     private static final Logger log = LoggerFactory.getLogger(NetworkBlackholeAttack.class);
@@ -21,11 +23,13 @@ public class NetworkBlackholeAttack implements ContainerAttack {
     private final Set<String> addresses;
     private final Integer port;
     private final Map<String, List<String[]>> rules = new HashMap<>();
+    private final Function<String, IpRule> factory;
 
     protected NetworkBlackholeAttack(Builder builder) {
         this.containers = builder.containers;
         this.addresses = builder.addresses;
         this.port = builder.port;
+        this.factory = builder.factory;
     }
 
     @Override
@@ -33,7 +37,7 @@ public class NetworkBlackholeAttack implements ContainerAttack {
         for (Container<?> container : this.containers) {
             List<String[]> rulesToAdd = this.getRules(container);
             this.rules.put(container.getContainerId(), rulesToAdd);
-            new TestcontainersIpRule(container.getContainerId()).add(rulesToAdd);
+            factory.apply(container.getContainerId()).add(rulesToAdd);
             log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
         }
     }
@@ -43,7 +47,7 @@ public class NetworkBlackholeAttack implements ContainerAttack {
         for (Container<?> container : this.containers) {
             List<String[]> rulesToDelete = this.rules.get(container.getContainerId());
             if (rulesToDelete != null) {
-                new TestcontainersIpRule(container.getContainerId()).delete(rulesToDelete);
+                factory.apply(container.getContainerId()).delete(rulesToDelete);
                 log.info("Started {} on {}", this.getClass().getSimpleName(), container.getContainerName());
             }
         }
@@ -77,6 +81,7 @@ public class NetworkBlackholeAttack implements ContainerAttack {
     }
 
     public static class Builder extends ContainerAttack.Builder<NetworkBlackholeAttack> {
+        public Function<String, IpRule> factory = TestcontainersIpRule::forContainer;
         private Set<String> addresses = Collections.emptySet();
         private Integer port = null;
 
@@ -90,6 +95,11 @@ public class NetworkBlackholeAttack implements ContainerAttack {
 
         public Builder port(Integer port) {
             this.port = port;
+            return this;
+        }
+
+        public Builder factory(Function<String, IpRule> factory) {
+            this.factory = factory;
             return this;
         }
 

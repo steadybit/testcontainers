@@ -20,7 +20,7 @@ public class Iperf3ClientContainer extends GenericContainer<Iperf3ClientContaine
     private String maxBitrate = "500M";
 
     public Iperf3ClientContainer(Iperf3ServerContainer server) {
-        super("cilium/netperf:latest");
+        super("taoyou/iperf3-alpine:latest");
         this.server = server;
     }
 
