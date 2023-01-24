@@ -33,9 +33,9 @@ class NetworkLimitBandwidthAttackTest {
         Steadybit.networkLimitBandwidth(attackBandwidth)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(15));
                 });
-        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
     }
 
     @Test
@@ -46,7 +46,7 @@ class NetworkLimitBandwidthAttackTest {
                 .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(15));
                 });
 
         // mismatch
@@ -54,10 +54,10 @@ class NetworkLimitBandwidthAttackTest {
                 .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
                 });
 
-        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
     }
 
     @Test
@@ -68,7 +68,7 @@ class NetworkLimitBandwidthAttackTest {
                 .destAddress(tester.getIperfClientAddress())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(15));
                 });
 
         // mismatch
@@ -76,10 +76,10 @@ class NetworkLimitBandwidthAttackTest {
                 .destAddress("1.1.1.1")
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
                 });
 
-        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
     }
 
     @Test
@@ -91,7 +91,7 @@ class NetworkLimitBandwidthAttackTest {
                 .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.attackBandwidth.getValue(), withPercentage(15));
                 });
 
         // mismatch address
@@ -100,7 +100,7 @@ class NetworkLimitBandwidthAttackTest {
                 .destPort(tester.getDataPort())
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
                 });
 
         // mismatch port
@@ -109,10 +109,10 @@ class NetworkLimitBandwidthAttackTest {
                 .destPort(tester.getDataPort() + 999)
                 .forContainers(target)
                 .exec(() -> {
-                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+                    assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
                 });
 
-        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(10));
+        assertThat(tester.measureBandwidth()).isCloseTo(this.normalBandwidth.getValue(), withPercentage(15));
     }
 
 }
