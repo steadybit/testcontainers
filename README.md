@@ -14,7 +14,7 @@ Add this to the test dependencies in your `pom.xml`:
 <dependency>  
   <groupId>com.steadybit</groupId>
   <artifactId>steadybit-testcontainers</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <scope>test</scope>
 </dependency>
 ```
